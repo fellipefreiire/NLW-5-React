@@ -10,6 +10,8 @@ import { convertDurationToTimeString } from '../../utils/convertDurationToTimeSt
 import { api } from '../services/api'
 
 import * as S from '../styles/home'
+import { useContext } from 'react'
+import { PlayerContext } from '../contexts/PlayerContext'
 
 type Episode = {
   id: string
@@ -28,6 +30,8 @@ type HomeProps = {
 }
 
 const Homepage: React.FC<HomeProps> = ({ latestEpisodes, allEpisodes }) => {
+  const { play } = useContext(PlayerContext)
+
   return (
     <>
       <Head>
@@ -49,13 +53,20 @@ const Homepage: React.FC<HomeProps> = ({ latestEpisodes, allEpisodes }) => {
                 />
 
                 <S.EpisodeDetails>
-                  <a href='#'>{episode.title}</a>
+                  <Link href={`/episodes/${episode.id}`}>
+                    <a>{episode.title}</a>
+                  </Link>
                   <p>{episode.members}</p>
                   <span>{episode.publishedAt}</span>
                   <span>{episode.durationAsString}</span>
                 </S.EpisodeDetails>
 
-                <button>
+                <button
+                  type='button'
+                  onClick={() => {
+                    play(episode)
+                  }}
+                >
                   <img src='/play-green.svg' alt='Tocar Episódio' />
                 </button>
               </li>
