@@ -42,12 +42,12 @@ const Episode: React.FC<EpisodeProps> = ({ episode }): JSX.Element => {
             <img src='/arrow-left.svg' alt='Voltar' />
           </button>
         </Link>
-        <Image
+        {/* <Image
           width={700}
           height={160}
           src={episode.thumbnail}
           objectFit='cover'
-        />
+        /> */}
         <button
           type='button'
           onClick={() => {
@@ -99,7 +99,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 export const getStaticProps: GetStaticProps = async ctx => {
   const { slug } = ctx.params
-  const { data } = await api.get(`/episodes/${slug}`)
+  const { data } = await api.get(`episodes/${slug}`)
 
   const episode = {
     id: data.id,
