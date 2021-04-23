@@ -69,7 +69,9 @@ export const EmptyPlayer = styled.div`
 export const Footer = styled.footer`
   align-self: stretch;
   &.empty {
-    opacity: 0.5;
+    div:first-of-type {
+      opacity: 0.5;
+    }
   }
 `
 
@@ -113,10 +115,20 @@ export const Buttons = styled.div`
 
     &:disabled {
       cursor: default;
+      opacity: 0.5;
     }
 
     &:hover:not(:disabled) {
       filter: brightness(0.7);
+    }
+
+    &.isActive {
+      filter: invert(0.35) sepia(1) saturate(3) hue-rotate(100deg);
+    }
+
+    &.isActive:hover {
+      filter: brightness(0.6) invert(0.35) sepia(1) saturate(3)
+        hue-rotate(100deg);
     }
 
     &.playButton {

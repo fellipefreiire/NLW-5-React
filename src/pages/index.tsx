@@ -1,7 +1,7 @@
-import Head from 'next/head'
 import { GetStaticProps } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
+import Head from 'next/head'
 
 import { format, parseISO } from 'date-fns'
 import ptBR from 'date-fns/locale/pt-BR'
@@ -10,8 +10,7 @@ import { convertDurationToTimeString } from '../../utils/convertDurationToTimeSt
 import { api } from '../services/api'
 
 import * as S from '../styles/home'
-import { useContext } from 'react'
-import { PlayerContext } from '../contexts/PlayerContext'
+import { usePlayer } from '../contexts/PlayerContext'
 
 type Episode = {
   id: string
@@ -30,95 +29,99 @@ type HomeProps = {
 }
 
 const Homepage: React.FC<HomeProps> = ({ latestEpisodes, allEpisodes }) => {
-  const { play } = useContext(PlayerContext)
+  const { playList } = usePlayer()
+
+  const episodeList = [...latestEpisodes, ...allEpisodes]
 
   return (
-    <>
+    <S.Container>
       <Head>
-        <title>Homepage</title>
-        <link rel='icon' href='/favicon.ico' />
+        <title>Home | Podcastr</title>
       </Head>
-      <S.Container>
-        <S.LatestEpisodes>
-          <h2>Últimos lançamentos</h2>
-          <ul>
-            {latestEpisodes.map(episode => (
-              <li key={episode.id}>
-                <Image
-                  width={192}
-                  height={192}
-                  src={episode.thumbnail}
-                  alt={episode.title}
-                  objectFit='cover'
-                />
+      <S.LatestEpisodes>
+        <h2>Últimos lançamentos</h2>
+        <ul>
+          {latestEpisodes.map((episode, index) => (
+            <li key={episode.id}>
+              <Image
+                width={192}
+                height={192}
+                src={episode.thumbnail}
+                alt={episode.title}
+                objectFit='cover'
+              />
 
-                <S.EpisodeDetails>
+              <S.EpisodeDetails>
+                <Link href={`/episodes/${episode.id}`}>
+                  <a>{episode.title}</a>
+                </Link>
+                <p>{episode.members}</p>
+                <span>{episode.publishedAt}</span>
+                <span>{episode.durationAsString}</span>
+              </S.EpisodeDetails>
+
+              <button
+                type='button'
+                onClick={() => {
+                  playList(episodeList, index)
+                }}
+              >
+                <img src='/play-green.svg' alt='Tocar Episódio' />
+              </button>
+            </li>
+          ))}
+        </ul>
+      </S.LatestEpisodes>
+      <S.AllEpisodes>
+        <h2>Todos episódios</h2>
+
+        <table cellSpacing={0}>
+          <thead>
+            <tr>
+              <th></th>
+              <th>Podcast</th>
+              <th>Integrantes</th>
+              <th>Data</th>
+              <th>Duração</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {allEpisodes.map((episode, index) => (
+              <tr key={episode.id}>
+                <td style={{ width: 72 }}>
+                  <Image
+                    width={120}
+                    height={120}
+                    src={episode.thumbnail}
+                    alt={episode.title}
+                    objectFit='cover'
+                  />
+                </td>
+                <td>
                   <Link href={`/episodes/${episode.id}`}>
                     <a>{episode.title}</a>
                   </Link>
-                  <p>{episode.members}</p>
-                  <span>{episode.publishedAt}</span>
-                  <span>{episode.durationAsString}</span>
-                </S.EpisodeDetails>
-
-                <button
-                  type='button'
-                  onClick={() => {
-                    play(episode)
-                  }}
-                >
-                  <img src='/play-green.svg' alt='Tocar Episódio' />
-                </button>
-              </li>
-            ))}
-          </ul>
-        </S.LatestEpisodes>
-        <S.AllEpisodes>
-          <h2>Todos episódios</h2>
-
-          <table cellSpacing={0}>
-            <thead>
-              <tr>
-                <th></th>
-                <th>Podcast</th>
-                <th>Integrantes</th>
-                <th>Data</th>
-                <th>Duração</th>
-                <th></th>
+                </td>
+                <td>{episode.members}</td>
+                <td style={{ width: 100 }}>{episode.publishedAt}</td>
+                <td>{episode.durationAsString}</td>
+                <td>
+                  <button
+                    type='button'
+                    onClick={() =>
+                      playList(episodeList, index + latestEpisodes.length)
+                    }
+                  >
+                    <img src='/play-green.svg' alt='Tocar Episódio' />
+                  </button>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {allEpisodes.map(episode => (
-                <tr key={episode.id}>
-                  <td style={{ width: 72 }}>
-                    <Image
-                      width={120}
-                      height={120}
-                      src={episode.thumbnail}
-                      alt={episode.title}
-                      objectFit='cover'
-                    />
-                  </td>
-                  <td>
-                    <Link href={`/episodes/${episode.id}`}>
-                      <a>{episode.title}</a>
-                    </Link>
-                  </td>
-                  <td>{episode.members}</td>
-                  <td style={{ width: 100 }}>{episode.publishedAt}</td>
-                  <td>{episode.durationAsString}</td>
-                  <td>
-                    <button type='button'>
-                      <img src='/play-green.svg' alt='Tocar Episódio' />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </S.AllEpisodes>
-      </S.Container>
-    </>
+            ))}
+          </tbody>
+        </table>
+      </S.AllEpisodes>
+    </S.Container>
   )
 }
 
