@@ -11,7 +11,6 @@ import { convertDurationToTimeString } from '../../../utils/convertDurationToTim
 
 import * as S from '../../styles/episodes'
 import { usePlayer } from '../../contexts/PlayerContext'
-import axios from 'axios'
 
 type Episode = {
   id: string
